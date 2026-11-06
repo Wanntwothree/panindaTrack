@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <title>Inventory</title>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav-bar">
+        <a href="../index.html"><h1 class="text-logo">PanindaTrack</h1></a>
+        <ul>
+            <li><a href="../index.html">Summary</a></li>
+            <li><a href="sales.html">Sales</a></li>
+            <li><a href="inventory.html">Inventory</a></li>
+            <li><a href="history.html">History</a></li>
+            <li><a href="settings.html">Settings</a></li>
+        </ul>
+    </nav>
+
+        <main class="content">
+            <h1>Inventory</h1>
+
+            <div class="form">
+                <label for="productName">Product Name
+                    <input type="text" placeholder="Product Name" id="productName-input">
+                </label>
+
+                <label for="price">Price
+                    <input type="number" placeholder="Price" id="price-input">
+                </label>
+
+                <label for="quantity">Quantity
+                    <input type="number" placeholder="Quantity" id="quantity-input">
+                </label>
+
+                <button type="submit" id="addBtn">Add</button>
+                <button type="button" id="editBtn">Edit</button>
+                <button type="button" id="deleteBtn">Delete</button>
+            </div>
+            
+            <div class="content-container" id="inventory">
+                <h3>Current Products</h3>
+                <div id="products-display"></div>
+            </div>
+
+            <p id="message"></p>
+        </main>
+
+    </div>
+
+    <dialog id="confirm-dialog">
+        <p>Do you want to delete this product?</p>
+
+        <div class="dialog-buttons">
+            <button type="button" id="yesBtn" disabled>Yes (5)</button>
+            <button type="button" id="noBtn">No</button>
+        </div>
+    </dialog>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/inventory.js"></script>
+</body>
+</html>

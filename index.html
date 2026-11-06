@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Summary</title>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav-bar">
+            <a href="index.html"><h1 class="text-logo">PanindaTrack</h1></a>
+            <ul>
+                <li><a href="index.html">Summary</a></li>
+                <li><a href="html/sales.html">Sales</a></li>
+                <li><a href="html/inventory.html">Inventory</a></li>
+                <li><a href="html/history.html">History</a></li>
+                <li><a href="html/settings.html">Settings</a></li>
+            </ul>
+        </nav>
+    
+        <main class="content">
+            <h1>Summary</h1>
+
+            <label for="date-input">Date</label>
+            <input type="date" id="date-input">
+
+            <div class="summary-grid">
+
+                <div class="content-container">
+                    <h3>Total Sales on Date</h3>
+                    <p id="total-all">₱0.00</p>
+                </div>
+
+                <div class="content-container">
+                    <h3>Top units sold on date</h3>
+                    <div id="top-display"></div>
+                </div>
+
+                <div class="content-container">
+                    <h3>Checkouts on date</h3>
+                    <div id="checkout-display"></div>
+                </div>
+
+                <div class="content-container">
+                    <h3>Low Stock</h3>
+                    <div id="low-display"></div>
+                </div>
+            </div>
+            
+        </main>
+
+    </div>
+    <script src="/js/script.js"></script>
+    <script src="/js/summary.js"></script>
+</body>
+</html>

@@ -2,8 +2,8 @@ const nameInput = document.getElementById('productName-input');
 const priceInput = document.getElementById('price-input');
 const quantityInput = document.getElementById('quantity-input');
 const addBtn = document.getElementById('addBtn');
-const editBtn = document.getElementById('editBtn');
 const deleteBtn = document.getElementById('deleteBtn');
+const backBtn = document.getElementById('backBtn');
 const display = document.getElementById('products-display');
 const message = document.getElementById('message');
 
@@ -28,11 +28,32 @@ function readInputs() {
     const name = nameInput.value.trim();
     const price = Number(priceInput.value);
     const quantity = Number(quantityInput.value);
-    if (name === '' || price <= 0 || quantity <= 0) return null;
+    //name is empty
+    if(name === ''){
+        showMessage('Product name is required.', 'error');
+        return null;
+    }
+    //if name is long
+    if(name.length > 50){
+        showMessage('Name must be 50 characters or less.', 'error');
+        return null;
+    }
+    //if price is 0
+    if(priceInput.value === '' || !Number.isFinite(price) || price <= 0){
+        showMessage('Price must be a number greater than 0.', 'error');
+        return null;
+    }
+    //if quantity 0
+    if(quantityInput.value === '' || !Number.isInteger(quantity) || quantity < 0){
+        showMessage('Quantity must be a whole number (0 or more).', 'error');
+        return null;
+    }
     return { name, price, quantity };
 }
 
+//displaying the buttons, tables, text
 function displayProducts() {
+    updateButtons();
     const products = loadProducts();
     display.replaceChildren();
 
@@ -44,7 +65,7 @@ function displayProducts() {
     const table = document.createElement('table');
     const thead = document.createElement('thead');
     const headRow = document.createElement('tr');
-    ['Product', 'Price', 'Qty'].forEach(text => {
+    ['Product', 'Price', 'Qty', 'Actions'].forEach(text => {
         const th = document.createElement('th');
         th.textContent = text;
         headRow.appendChild(th);
@@ -60,15 +81,46 @@ function displayProducts() {
             row.appendChild(td);
         });
 
-        if (index === selectedIndex) row.classList.add('selected');
+        //placing the edit and delete buttons beside the quantity
+        const actionTd = document.createElement('td');
+        const editRowBtn = document.createElement('button');
+        editRowBtn.textContent = 'Edit';
 
-        row.addEventListener('click', () => {
+        if(index === selectedIndex) editRowBtn.classList.add('active');
+
+        editRowBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             selectedIndex = index;
             nameInput.value = p.name;
             priceInput.value = p.price;
             quantityInput.value = p.quantity;
             displayProducts();
         });
+
+        const deleteRowBtn = document.createElement('button');
+        deleteRowBtn.textContent = 'Delete';
+        deleteRowBtn.classList.add('delete-btn');
+        deleteRowBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectedIndex = index;
+            deleteBtn.click();
+        });
+
+        const stockRowBtn = document.createElement('button');
+        stockRowBtn.textContent = 'Add Stock';
+        stockRowBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            stockIndex = index;
+            stockTitle.textContent = `Add stock to ${p.name} (current: ${p.quantity})`;
+            stockInput.value = '';
+            stockError.textContent = '';
+            stockDialog.showModal();
+        });
+
+        actionTd.append(stockRowBtn, editRowBtn, deleteRowBtn);
+        row.appendChild(actionTd);
+
+        if (index === selectedIndex) row.classList.add('selected');
 
         tbody.appendChild(row);
     });
@@ -78,39 +130,52 @@ function displayProducts() {
     display.appendChild(table);
 }
 
+/*input validation*/
+let messageTimer = null;
+function showMessage(text, type) {
+    clearTimeout(messageTimer);
+    message.textContent = text;
+    message.className = type; // 'error' or 'success'
+
+    if(text === '') return;
+
+    void message.offsetWidth;
+    message.classList.add('show');
+    messageTimer = setTimeout(() => message.classList.remove('show'), 2500);
+}
+
+function updateButtons(){
+    addBtn.textContent = selectedIndex === null ? 'Add Product' : 'Save';
+    backBtn.style.display = selectedIndex === null ? 'none' : 'inline-block';
+    quantityInput.disabled = selectedIndex !== null;
+}
+
+//adding products
 addBtn.addEventListener('click', () => {
     const product = readInputs();
     if (!product) return;
 
-    if(nameExists(product.name, -1)){
-        message.textContent = 'This product already exists.';
+    const editing = selectedIndex !== null;
+    if(nameExists(product.name, editing ? selectedIndex : -1)){
+        showMessage('Product already exists.', 'error');
         return;
     }
-    message.textContent = '';
 
     const products = loadProducts();
-    products.push(product);
+    if(editing) products[selectedIndex] = product;
+    else products.push(product); 
     saveProducts(products);
     clearInputs();
     displayProducts();
+    showMessage(editing ? 
+        'Product updated successfully!' : 'Product added successfully!', 'success'
+    );
 });
 
-editBtn.addEventListener('click', () => {
-    if (selectedIndex === null) return;
-    const product = readInputs();
-    if (!product) return;
-    
-    if(nameExists(product.name, selectedIndex)){
-        message.textContent = 'This product already exists.';
-        return;
-    }
-    message.textContent = '';
-
-    const products = loadProducts();
-    products[selectedIndex] = product;
-    saveProducts(products);
+backBtn.addEventListener('click', () => {
     clearInputs();
     displayProducts();
+    showMessage('', '');
 });
 
 const dialog = document.getElementById('confirm-dialog');
@@ -124,9 +189,13 @@ function closeDialog() {
 }
 
 deleteBtn.addEventListener('click', () => {
-    if (selectedIndex === null) return;
+    //not select product error
+    if (selectedIndex === null){
+        showMessage('Select a product first.', 'error');
+        return;
+    }
 
-    let seconds = 5;
+    let seconds = 2;
     yesBtn.disabled = true;
     yesBtn.textContent = `Yes (${seconds})`;
     dialog.showModal();
@@ -150,12 +219,47 @@ yesBtn.addEventListener('click', () => {
     clearInputs();
     displayProducts();
     closeDialog();
+    showMessage('Product deleted successfully!', 'success');
 });
 
-noBtn.addEventListener('click', closeDialog);
-dialog.addEventListener('cancel', () => clearInterval(timer));
+noBtn.addEventListener('click', () => {
+    closeDialog();
+    clearInputs();
+    displayProducts();
+});
+
+dialog.addEventListener('cancel', () => {
+    clearInterval(timer);
+    clearInputs();
+    displayProducts();
+});
 
 displayProducts();
+
+//Add stock dialog
+const stockDialog = document.getElementById('stock-dialog');
+const stockTitle = document.getElementById('stock-title');
+const stockInput = document.getElementById('stock-input');
+const stockError = document.getElementById('stock-error');
+const stockSaveBtn = document.getElementById('stockSaveBtn');
+const stockCancelBtn = document.getElementById('stockCancelBtn');
+let stockIndex = null;
+
+stockSaveBtn.addEventListener('click', () => {
+    const qty = Number(stockInput.value);
+    if(stockInput.value === '' || !Number.isInteger(qty) || qty <= 0){
+        stockError.textContent = 'Enter a whole number greater than 0.';
+        return;
+    }
+    const products = loadProducts();
+    products[stockIndex].quantity += qty;
+    saveProducts(products);
+    stockDialog.close();
+    displayProducts();
+    showMessage('Stock updated successfully!', 'success');
+});
+
+stockCancelBtn.addEventListener('click', () => stockDialog.close());
 
 function nameExists(name, ignoreIndex){
     const products = loadProducts();

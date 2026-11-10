@@ -106,6 +106,18 @@ li a.active {
     color: white;
 }
 
+.content-container button.delete-btn,
+body.dark .content-container button.delete-btn {
+    background-color: #e53935;
+    color: white;
+}
+
+.content-container button.delete-btn:hover,
+body.dark .content-container button.delete-btn:hover {
+    background-color: #c62828;
+    color: white;
+}
+
 /*Inventory*/
 #inventory{
     max-width: 1000px;
@@ -125,12 +137,12 @@ th, td{
 }
 
 tbody tr { 
-    cursor: pointer; 
+    cursor: default; 
 }
 
 tbody tr:hover,
 tr.selected { 
-    background-color: #e6e6e6; 
+    background-color: #f5f3f3; 
 }
 
 /*Inventory: form*/
@@ -184,6 +196,11 @@ input:focus {
 }
 
 /*Inventory: delete*/
+
+td button + button {
+    margin-left: 10px;   /* gap between Edit and Delete */
+}
+
 dialog {
     width: 320px;
     max-width: 90%;
@@ -241,10 +258,26 @@ dialog button {
 }
 
 /*Inventory: duplicate checker message*/
-#message {
+#message.error {
     text-align: center;
     color: #c62828;
     font-weight: 600;
+}
+
+#message.success {
+    text-align: center;
+    color: #74e287;
+    font-weight: 600;
+}
+
+#message {
+    opacity: 0;
+    min-height: 20px;
+    transition: opacity 0.4s ease;
+}
+
+#message.show{
+    opacity: 1;
 }
 
 /*Sales*/
@@ -286,6 +319,16 @@ dialog button:hover {
 
 dialog p {
     margin: 12px 0 20px 0;
+}
+
+.stock-error{
+    margin: 8px 0 12px;
+    font-size: 13px;
+    color: #c62828;
+}
+
+body.dark .stock-error{
+    color: #ff8a80;
 }
 
 /*Summary*/

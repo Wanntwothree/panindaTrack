@@ -163,7 +163,10 @@ addBtn.addEventListener('click', () => {
 
     const products = loadProducts();
     if(editing) products[selectedIndex] = product;
-    else products.push(product); 
+    else {
+        products.push(product);
+        logStock(product.name, 'in', product.quantity, product.quantity);
+    }
     saveProducts(products);
     clearInputs();
     displayProducts();
@@ -253,6 +256,7 @@ stockSaveBtn.addEventListener('click', () => {
     }
     const products = loadProducts();
     products[stockIndex].quantity += qty;
+    logStock(products[stockIndex].name, 'in', qty, products[stockIndex].quantity);
     saveProducts(products);
     stockDialog.close();
     displayProducts();

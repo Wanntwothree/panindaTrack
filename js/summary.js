@@ -1,7 +1,29 @@
 const totalAll = document.getElementById('total-all');
-const dateInput = document.getElementById('date-input');
 const topDisplay = document.getElementById('top-display');
-const checkoutDisplay = document.getElementById('checkout-display');
+
+const totalStockEl = document.getElementById('total-stock');
+const totalInEl = document.getElementById('total-in');
+const totalOutEl = document.getElementById('total-out');
+const statusDisplay = document.getElementById('status-display');
+const statusBtns = document.querySelectorAll('.status-btn');
+let currentStatus = 'all';
+
+const todayDate = document.getElementById('today-date');
+
+const checkoutCount = document.getElementById('checkout-count');
+
+function showToday(){
+    todayDate.textContent = new Date().toLocaleDateString([], {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+}
+
+showToday();
+setInterval(showToday, 60000);
+
+function loadLogs(){
+    return JSON.parse(localStorage.getItem('stockLogs')) || [];
+}
 
 function loadProducts(){
     return JSON.parse(localStorage.getItem('products')) || [];
@@ -20,18 +42,18 @@ function dateKey(iso){
 
 function displaySummary(){
     const sales = loadSales();
-    const daySales = sales.filter(s => dateKey(s.date) === dateInput.value);
 
     let total = 0;
-    daySales.forEach(s => {
+    sales.forEach(s => {
         total += s.total;
     });
 
     totalAll.textContent = `₱${total.toFixed(2)}`;
+    checkoutCount.textContent = `${sales.length} checkout${sales.length === 1 ? '' : 's'}`;
 
     const units = {};
 
-    daySales.forEach(s => {
+    sales.forEach(s => {
         s.items.forEach(i => {
             units[i.name] = (units[i.name] || 0) + i.qty;
         });
@@ -42,7 +64,7 @@ function displaySummary(){
     topDisplay.replaceChildren();
 
     if(ranked.length === 0){
-        topDisplay.textContent = 'No sales on this date.';
+        topDisplay.textContent = 'No sales yet';
     }else{
         const topTable = document.createElement('table');
         const topBody = document.createElement('tbody');
@@ -62,84 +84,86 @@ function displaySummary(){
         topTable.appendChild(topBody);
         topDisplay.appendChild(topTable);
     }
+    displayStockCards();
+    displayStatus();
+}
 
-    checkoutDisplay.replaceChildren();
+//stock status cards
+function displayStockCards(){
+    let stock = 0;
+    loadProducts().forEach(p => stock += p.quantity);
+    totalStockEl.textContent = stock;
 
-    if(daySales.length === 0){
-        checkoutDisplay.textContent = 'No checkouts on this date.';
-    }else{
-        const checkoutTable = document.createElement('table');
+    let totalIn = 0;
+    let totalOut = 0;
+    loadLogs().forEach(l => {
+        if(l.type === 'in') totalIn += l.qty;
+        else totalOut += l.qty;
+    });
+    totalInEl.textContent = totalIn;
+    totalOutEl.textContent = totalOut;
+}
 
-        const thead = document.createElement('thead');
-        const headRow = document.createElement('tr');
-        ['ID', 'Time', 'Units', 'Total'].forEach(text => {
-            const th = document.createElement('th');
-            th.textContent = text;
-            headRow.appendChild(th);
-        });
-        thead.appendChild(headRow);
-        checkoutTable.appendChild(thead);
+function getStatus(qty){
+    if(qty > 10) return 'high';
+    if(qty > 5) return 'moderate';
+    return 'low';
+}
 
-        const checkoutBody = document.createElement('tbody');
+function displayStatus(){
+    const items = loadProducts().filter(p =>
+        currentStatus === 'all' || getStatus(p.quantity) === currentStatus
+    );
 
-        daySales.forEach(s => {
-            let unitCount = 0;
-            s.items.forEach(i => {
-                unitCount += i.qty;
-            });
+    statusDisplay.replaceChildren();
 
-            const time = new Date(s.date).toLocaleTimeString([], 
-                {hour: '2-digit', minute: '2-digit'});
-            
-            const row = document.createElement('tr');
-            [s.id, time, unitCount, `₱${s.total.toFixed(2)}`].forEach(value => {
-                const td = document.createElement('td');
-                td.textContent = value;
-                row.appendChild(td);
-            });
-
-        checkoutBody.appendChild(row);
-        checkoutTable.appendChild(checkoutBody);
-        checkoutDisplay.appendChild(checkoutTable);
-
-        });
-    }
-
-    /*Low stock*/
-    const products = loadProducts();
-    const lowDisplay = document.getElementById('low-display');
-    const LOW_STOCK = 5;
-
-    lowDisplay.replaceChildren();
-
-    const lowItems = products.filter(p => p.quantity <= LOW_STOCK);
-    
-    if(lowItems.length === 0){
-        lowDisplay.textContent = 'No low stock products.';
+    if(items.length === 0){
+        statusDisplay.textContent = 'No products with this status.';
         return;
     }
 
     const table = document.createElement('table');
-    const tbody = document.createElement('tbody');
+    const thead = document.createElement('thead');
+    const headRow = document.createElement('tr');
+    ['Product', 'Qty', 'Status'].forEach(text => {
+        const th = document.createElement('th');
+        th.textContent = text;
+        headRow.appendChild(th);
+    });
+    thead.appendChild(headRow);
+    table.appendChild(thead);
 
-    lowItems.forEach(p => {
+    const tbody = document.createElement('tbody');
+    items.forEach(p => {
+        const status = getStatus(p.quantity);
         const row = document.createElement('tr');
 
-        const nameCell = document.createElement('td');
-        nameCell.textContent = p.name;
-        row.appendChild(nameCell);
-
-        const stockCell = document.createElement('td');
-        stockCell.textContent = p.quantity;
-        row.appendChild(stockCell);
+        [p.name, p.quantity, null].forEach((value, i) => {
+            const td = document.createElement('td');
+            if(i === 2){
+                const badge = document.createElement('span');
+                badge.className = `badge ${status}`;
+                badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                td.appendChild(badge);
+            }else{
+                td.textContent = value;
+            }
+            row.appendChild(td);
+        });
 
         tbody.appendChild(row);
     });
 
     table.appendChild(tbody);
-    lowDisplay.appendChild(table);
+    statusDisplay.appendChild(table);
 }
 
-dateInput.value = dateKey(new Date().toISOString());
-dateInput.addEventListener('change', displaySummary);
+statusBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        currentStatus = btn.dataset.status;
+        statusBtns.forEach(b => b.classList.toggle('active', b === btn));
+        displayStatus();
+    });
+});
+
 displaySummary();

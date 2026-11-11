@@ -146,6 +146,7 @@ confirmBtn.addEventListener('click', () => {
         if(qty === 0) return;
 
         p.quantity -= qty;
+        logStock(p.name, 'out', qty, p.quantity);
         total += p.price * qty;
         items.push({name: p.name, price: p.price, qty: qty});
     });

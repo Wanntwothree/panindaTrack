@@ -20,15 +20,79 @@
         </nav>
 
         <main class="content">
-            <h3>All checkouts</h3>
+            <h1>History</h1>
 
-            <div class="toolbar">
-                <label for="date-input">Date</label>
-                <input type="date" id="date-input">
-                <button type="button" id="clearBtn">Show all</button>
+            <div class="tabs">
+                <button type="button" class="tab-btn active" data-tab="stock">Stock logs</button>
+                <button type="button" class="tab-btn" data-tab="checkout">Checkouts</button>
+            </div>
+
+            <section id="stock-section">
+                <div class="toolbar">
+                    <label for="from-input">From</label>
+                    <input type="date" id="from-input">
+                    <label for="to-input">To</label>
+                    <input type="date" id="to-input">
+                    <select id="type-input">
+                        <option value="all">All</option>
+                        <option value="in">Stock In</option>
+                        <option value="out">Stock Out</option>
+                    </select>
+                    <button type="button" id="clearBtn">Show all</button>
+                </div>
+
+                <p id="history-message"></p>
+
+            <div class="stat-cards">
+                <div class="stat-card">
+                    <span>Current total stock</span>
+                    <strong id="total-stock">0</strong>
+                </div>
+                <div class="stat-card in">
+                    <span>Total stock in</span>
+                    <strong id="total-in">0</strong>
+                </div>
+                <div class="stat-card out">
+                    <span>Total stock out</span>
+                    <strong id="total-out">0</strong>
+                </div>
             </div>
 
             <div id="history-display"></div>
+        </section>
+
+        <section id="checkout-section" hidden>
+            <div class="toolbar">
+                <label for="co-from">From</label>
+                <input type="date" id="co-from">
+                <label for="co-to">To</label>
+                <input type="date" id="co-to">
+                <button type="button" id="co-clear">Show all</button>
+            </div>
+
+            <p id="co-message"></p>
+
+            <div class="co-cards">
+                <div class="co-card">
+                    <span>Total sales</span>
+                    <strong id="co-total">₱0.00</strong>
+                </div>
+                <div class="co-card">
+                    <span>Total units sold</span>
+                    <div id="co-top"></div>
+                </div>
+            </div>
+            <div class="co-list" id="co-display"></div>
+        </section>
+
+        <dialog id="receipt-dialog">
+            <div id="rc-head"></div>
+            <div id="rc-items"></div>
+            <div id="rc-total"></div>
+            <div class="dialog-buttons">
+                <button type="button" id="rc-close">Close</button>
+            </div>
+        </dialog>
         </main>
 
     </div>

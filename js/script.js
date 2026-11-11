@@ -36,3 +36,10 @@ if (lightBtn && darkBtn) {
     updateButtons();
   });
 }
+
+//logs
+function logStock(product, type, qty, after){//declaration
+  const logs = JSON.parse(localStorage.getItem('stockLogs')) || [];//getting the logs
+  logs.push({date: new Date().toISOString(), product, type, qty, after});//push the logs 
+  localStorage.setItem('stockLogs', JSON.stringify(logs));//storing the logs
+}

@@ -22,29 +22,46 @@
         <main class="content">
             <h1>Summary</h1>
 
-            <label for="date-input">Date</label>
-            <input type="date" id="date-input">
+            <p id="today-date"></p>
 
-            <div class="summary-grid">
-
-                <div class="content-container">
-                    <h3>Total Sales on Date</h3>
-                    <p id="total-all">₱0.00</p>
+            <div class="stat-cards">
+                <div class="stat-card sales">
+                    <span>Total sales</span>
+                    <strong id="total-all">₱0.00</strong>
+                    <small id="checkout-count">0 checkouts</small>
                 </div>
 
-                <div class="content-container">
-                    <h3>Top units sold on date</h3>
+                <div class="stat-card">
+                    <span>Current total stock</span>
+                    <strong id="total-stock">0</strong>
+                </div>
+
+                <div class="stat-card in">
+                    <span>Total stock in</span>
+                    <strong id="total-in">0</strong>
+                </div>
+
+                <div class="stat-card out">
+                    <span>Total stock out</span>
+                    <strong id="total-out">0</strong>
+                </div>
+            </div>
+
+            <div class="summary-grid">
+                <div class="content-container top-card">
+                    <h3>Top units sold</h3>
                     <div id="top-display"></div>
                 </div>
 
-                <div class="content-container">
-                    <h3>Checkouts on date</h3>
-                    <div id="checkout-display"></div>
-                </div>
-
-                <div class="content-container">
-                    <h3>Low Stock</h3>
-                    <div id="low-display"></div>
+                <div class="content-container status-card">
+                    <h3>Stock Status</h3>
+                    <div class="status-header">
+                        <button type="button" class="status-btn active" data-status="all">All</button>
+                        <button type="button" class="status-btn" data-status="high">High</button>
+                        <button type="button" class="status-btn" data-status="moderate">Moderate</button>
+                        <button type="button" class="status-btn" data-status="low">Low</button>
+                    </div>
+                    <div id="status-display"></div>
                 </div>
             </div>
             

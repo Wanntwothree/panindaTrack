@@ -8,14 +8,26 @@ const statusDisplay = document.getElementById('status-display');
 const statusBtns = document.querySelectorAll('.status-btn');
 let currentStatus = 'all';
 
+const statusLabels = {
+    high: 'High', moderate: 'Moderate', low: 'Low', none: 'No stock'
+};
+
 const todayDate = document.getElementById('today-date');
 
 const checkoutCount = document.getElementById('checkout-count');
+
+let lastDay = dateKey(new Date().toISOString());
 
 function showToday(){
     todayDate.textContent = new Date().toLocaleDateString([], {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
+
+    const now = dateKey(new Date().toISOString());
+    if(now !== lastDay){
+        lastDay = now;
+        displaySummary();
+    }
 }
 
 showToday();
@@ -41,35 +53,33 @@ function dateKey(iso){
 }
 
 function displaySummary(){
-    const sales = loadSales();
+    const today = dateKey(new Date().toISOString());
+    const todaySales = loadSales().filter(s => dateKey(s.date) === today);
 
     let total = 0;
-    sales.forEach(s => {
-        total += s.total;
-    });
-
-    totalAll.textContent = `₱${total.toFixed(2)}`;
-    checkoutCount.textContent = `${sales.length} checkout${sales.length === 1 ? '' : 's'}`;
-
     const units = {};
 
-    sales.forEach(s => {
+    todaySales.forEach(s => {
+        total += s.total;
         s.items.forEach(i => {
             units[i.name] = (units[i.name] || 0) + i.qty;
         });
     });
 
-    const ranked = Object.entries(units).sort((a,b) => b[1] - a[1]);
+    totalAll.textContent = `₱${total.toFixed(2)}`;
+    checkoutCount.textContent = `${todaySales.length} checkout${todaySales.length === 1 ? '' : 's'}`;
+
+    const ranked = Object.entries(units).sort((a, b) => b[1] - a[1]);
 
     topDisplay.replaceChildren();
 
     if(ranked.length === 0){
-        topDisplay.textContent = 'No sales yet';
+        topDisplay.textContent = 'No sales today';
     }else{
         const topTable = document.createElement('table');
         const topBody = document.createElement('tbody');
 
-        ranked.forEach((r, index) => {
+        ranked.slice(0, 5).forEach((r, index) => {
             const row = document.createElement('tr');
 
             [index + 1, r[0], r[1]].forEach(value => {
@@ -97,6 +107,7 @@ function displayStockCards(){
     let totalIn = 0;
     let totalOut = 0;
     loadLogs().forEach(l => {
+        if(dateKey(l.date) !== dateKey(new Date().toISOString())) return;
         if(l.type === 'in') totalIn += l.qty;
         else totalOut += l.qty;
     });
@@ -105,22 +116,18 @@ function displayStockCards(){
 }
 
 function getStatus(qty){
+    if(qty === 0) return 'none';
     if(qty > 10) return 'high';
     if(qty > 5) return 'moderate';
     return 'low';
 }
 
 function displayStatus(){
-    const items = loadProducts().filter(p =>
-        currentStatus === 'all' || getStatus(p.quantity) === currentStatus
-    );
+    const items = loadProducts()
+    .filter(p =>currentStatus === 'all' || getStatus(p.quantity) === currentStatus)
+    .sort((a, b) => b.quantity - a.quantity);
 
     statusDisplay.replaceChildren();
-
-    if(items.length === 0){
-        statusDisplay.textContent = 'No products with this status.';
-        return;
-    }
 
     const table = document.createElement('table');
     const thead = document.createElement('thead');
@@ -134,6 +141,16 @@ function displayStatus(){
     table.appendChild(thead);
 
     const tbody = document.createElement('tbody');
+
+    if(items.length === 0){
+        const emptyRow = document.createElement('tr');
+        const emptyCell = document.createElement('td');
+        emptyCell.colSpan = 3;
+        emptyCell.className = 'empty-state';
+        emptyCell.textContent = 'No products with this status.';
+        emptyRow.appendChild(emptyCell);
+        tbody.appendChild(emptyRow);
+    }
     items.forEach(p => {
         const status = getStatus(p.quantity);
         const row = document.createElement('tr');
@@ -143,7 +160,7 @@ function displayStatus(){
             if(i === 2){
                 const badge = document.createElement('span');
                 badge.className = `badge ${status}`;
-                badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                badge.textContent = statusLabels[status];
                 td.appendChild(badge);
             }else{
                 td.textContent = value;

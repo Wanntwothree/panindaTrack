@@ -266,6 +266,16 @@ body.dark #status-display thead th{
     color: #c62828;
 }
 
+.badge.none{
+    background-color: #e0e0e0;
+    color: #555;
+}
+
+body.dark .badge.none{
+    background-color: #444444;
+    color: #d8d8d8;
+}
+
 body.dark .status-btn{
     background-color: #444444;
     color: #d8d8d8;
@@ -506,6 +516,70 @@ dialog p {
 
 body.dark .stock-error{
     color: #ff8a80;
+}
+
+/*Sales: quantity input*/
+.qty-box{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.qty-box input{
+    width: 48px;
+    padding: 6px 4px;
+    text-align: center;
+    -moz-appearance: textfield;
+}
+
+.qty-box button{
+    padding: 6px 12px;
+}
+
+.qty-box input::-webkit-outer-spin-button,
+.qty-box input::-webkit-inner-spin-button{
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#sales-message{
+    min-height: 20px;
+    margin: 14px 0 10px 0;
+    color: #c62828;
+    font-weight: 600;
+}
+
+#sales-message:not(:empty){
+    margin: 14px 0 10px 0;
+}
+
+body.dark #sales-message{
+    color: #ff8a80;
+}
+
+/*Sales: total and no stock*/
+.sales-total{
+    margin: 0 0 16px 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+#total{
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+/*Summary: empty state*/
+.empty-state{
+    padding: 28px 16px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #888;
+}
+
+body.dark .empty-state{
+    color: #b0b0b0;
 }
 
 /*History: styling*/

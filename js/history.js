@@ -64,8 +64,31 @@ function displayHistory(){
     historyDisplay.replaceChildren();
 
     if(logs.length === 0){
-        historyDisplay.textContent = 'No stock logs yet.';
-        return
+        const table = document.createElement('table');
+
+        const thead = document.createElement('thead');
+        const headRow = document.createElement('tr');
+        ['Date', 'Time', 'Product', 
+            'Type', 'Qty', 'Stock after'].forEach(text => {
+                const th = document.createElement('th');
+                th.textContent = text;
+                headRow.appendChild(th);
+            });
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 6;
+        cell.className = 'empty-cell';
+        cell.textContent = 'No stock logs yet.';
+        row.appendChild(cell);
+        tbody.appendChild(row);
+        table.appendChild(tbody);
+
+        historyDisplay.replaceChildren(table);
+        return;
     }
 
     let totalIn = 0;
@@ -237,8 +260,16 @@ function displayCheckouts(){
     coTotal.textContent = `₱${total.toFixed(2)}`;
 
     const ranked = Object.entries(units).sort((a, b) => b[1] - a[1]);
+
+    const unitsHead = makeRow('Product', 'Units');
+    unitsHead.classList.add('co-head');
+    coTop.appendChild(unitsHead);
+
     if(ranked.length === 0){
-        coTop.textContent = 'No sales';
+        const empty = document.createElement('div');
+        empty.className = 'co-empty';
+        empty.textContent = 'No sales';
+        coTop.appendChild(empty);
     }else{
         ranked.forEach((r, index) => {
             coTop.appendChild(makeRow(`${index + 1}. ${r[0]}`, r[1]));
@@ -246,7 +277,29 @@ function displayCheckouts(){
     }
 
     if(sales.length === 0){
-        coDisplay.textContent = 'No checkouts in this range.';
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        const headRow = document.createElement('tr');
+        ['ID', 'Date', 'Time', 'Units', 'Total', ''].forEach(text => {
+            const th = document.createElement('th');
+            th.textContent = text;
+            headRow.appendChild(th);
+        });
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+
+        // One row with one cell that stretches across all 6 columns
+        const tbody = document.createElement('tbody');
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 6;
+        cell.className = 'empty-cell';
+        cell.textContent = 'No checkouts in this range.';
+        row.appendChild(cell);
+        tbody.appendChild(row);
+        table.appendChild(tbody);
+
+        coDisplay.replaceChildren(table);
         return;
     }
 

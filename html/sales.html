@@ -15,7 +15,11 @@
                 <li><a href="sales.html">Sales</a></li>
                 <li><a href="inventory.html">Inventory</a></li>
                 <li><a href="history.html">History</a></li>
-                <li><a href="settings.html">Settings</a></li>
+                <li>
+                    <li>
+                        <button type="button" id="themeBtn" aria-label="Toggle light and dark mode">🌙</button>
+                    </li>
+                </li>
             </ul>
         </nav>
     
@@ -25,8 +29,9 @@
 
         <div class="content-container" id="sales">
             <h3>Products</h3>
-
-            <div id="sales-display"></div>
+            
+            <input type="text" id="searchBox" placeholder="Search products...">
+            <div id="sales-display" class="scroll-box"></div>
             <p id="sales-message"></p>
 
             <p class="sales-total">Total: <span id="total">₱0.00</span></p>

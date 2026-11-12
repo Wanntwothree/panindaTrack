@@ -12,30 +12,29 @@ if (localStorage.getItem("theme") === "dark") {
   body.classList.add("dark");
 }
 
-const lightBtn = document.getElementById("light-btn");
-const darkBtn = document.getElementById("dark-btn");
+const themeBtn = document.getElementById("themeBtn");
 
-function updateButtons() {
-  const isDark = body.classList.contains("dark");
-  lightBtn.classList.toggle("active", !isDark);
-  darkBtn.classList.toggle("active", isDark);
+function updateThemeIcon() {
+  if (body.classList.contains("dark")) {
+    themeBtn.textContent = "☀️";   // dark now, so show the sun
+  } else {
+    themeBtn.textContent = "🌙";   // light now, so show the moon
+  }
 }
 
-if (lightBtn && darkBtn) {
-  updateButtons();
+themeBtn.addEventListener("click", () => {
+  body.classList.toggle("dark");
 
-  lightBtn.addEventListener("click", () => {
-    body.classList.remove("dark");
-    localStorage.setItem("theme", "light");
-    updateButtons();
-  });
-
-  darkBtn.addEventListener("click", () => {
-    body.classList.add("dark");
+  if (body.classList.contains("dark")) {
     localStorage.setItem("theme", "dark");
-    updateButtons();
-  });
-}
+  } else {
+    localStorage.setItem("theme", "light");
+  }
+
+  updateThemeIcon();
+});
+
+updateThemeIcon();
 
 //logs
 function logStock(product, type, qty, after){//declaration

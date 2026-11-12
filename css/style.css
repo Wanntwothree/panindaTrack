@@ -31,13 +31,34 @@ ul {
 }
 
 .nav-bar {
+    position: sticky;
+    top: 0;
     height: 100vh;
+    align-self: flex-start;   /* stops the flex row from stretching it */
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
 }
 
 ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.text-logo,
+.nav-bar,
+ul {
+    background-color: #f1f1f1;
+    width: 200px;
+}
+
+ul li:last-child{
+    margin-top: auto;
+    margin-bottom: 12px;
 }
 
 a {
@@ -123,6 +144,19 @@ body.dark .content-container button.delete-btn:hover {
     color: white;
 }
 
+#themeBtn {
+    display: block;
+    width: 100%;
+    padding: 10px 5px 10px 16px;   /* 16px on the left moves it off the edge */
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    cursor: pointer;
+    text-align: left;              /* moves the icon to the left */
+    filter: grayscale(1);
+    opacity: 0.4;
+}
+
 /*Summary*/
 .summary-grid {
     display: grid;
@@ -205,6 +239,24 @@ body.dark .stat-card small{
     position: sticky;
     top: 0;
     background-color: white;
+}
+
+#status-display table {
+    table-layout: fixed;          /* columns keep their size no matter which rows show */
+}
+
+#status-display th:nth-child(2),
+#status-display td:nth-child(2) {
+    width: 130px;                 /* Qty */
+}
+
+#status-display th:nth-child(3),
+#status-display td:nth-child(3) {
+    width: 160px;                 /* Status */
+}
+
+#status-display {
+    scrollbar-gutter: stable;     /* reserves space for the scrollbar */
 }
 
 .status-card{
@@ -305,6 +357,11 @@ body.dark .badge.low{
 .content >.stat-cards{
     margin-top: 20px;
 }
+
+#sales-message.success{
+    color: #1a7f37;
+}
+
 /*Inventory*/
 #inventory{
     max-width: 1000px;
@@ -518,6 +575,37 @@ body.dark .stock-error{
     color: #ff8a80;
 }
 
+/*Sales: Search Bar*/
+#searchBox{
+    width: 100%;
+    font-size: 16px;
+    padding: 8px 2px;
+    margin-bottom: 12px;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    outline: none;
+}
+
+#searchBox:focus{
+    border-bottom: 1px solid #2f3158
+}
+
+/*Sales/Inventory: scrollable*/
+.scroll-box{
+    max-height: 400px;
+    overflow-y: auto;
+    box-shadow: inset 0 -10px 8px -8px rgba(0, 0, 0, 0.05);
+}
+
+.scroll-box thead th{
+    position: sticky;
+    top: 0;
+    background: white;
+}
+
 /*Sales: quantity input*/
 .qty-box{
     display: flex;
@@ -567,6 +655,17 @@ body.dark #sales-message{
 #total{
     font-size: inherit;
     font-weight: inherit;
+}
+
+/*Summary: dialog align*/
+.summary-line {
+    display: flex;
+    justify-content: space-between;   /* name on the left, price on the right */
+    gap: 16px;
+}
+
+.summary-line span:last-child {
+    white-space: nowrap;              /* keeps the price on one line */
 }
 
 /*Summary: empty state*/
@@ -746,6 +845,19 @@ body.dark #history-display thead th{
     white-space: nowrap;
 }
 
+.co-card span{
+    display: block;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.co-head{
+    font-weight: bold;
+    color: #000;
+    position: sticky;
+    top: 0;
+    background: #f0f0f0;
+}
 /*History: buttons*/
 #co-clear,
 .co-list button{
@@ -781,6 +893,16 @@ body.dark .co-list button:hover{
     background-color: #DBDBDB;
     color: #1a1a1a;
 }
+
+/*History: scroll*/
+#co-display{
+    padding-top: 0;
+}
+
+#co-display thead th{
+    background: #f0f0f0;
+}
+
 /*History: receipt dialog*/
 #receipt-dialog{
     font-family: monospace;
@@ -806,6 +928,14 @@ body.dark .co-list button:hover{
 
 #receipt-dialog .dialog-buttons{
     margin-top: 14px;
+}
+
+/*History: empty*/
+.co-empty{
+    text-align: center;
+    color: #888;
+    font-weight: bold;
+    padding: 16px 0;
 }
 
 body.dark .tab-btn{
@@ -895,6 +1025,14 @@ body.dark .badge.out{
 
 body.dark #history-message{
     color: #ff8a80;
+}
+
+/*History: empty*/
+.empty-cell{
+    text-align: center;
+    color: #888;
+    font-weight: bold;
+    padding: 24px 0;
 }
 /*light-dark theme (keep at the bottom)*/
 
@@ -1009,3 +1147,44 @@ body.dark .badge.out {
     color: #ff8a80;
 }
 
+/*dark mode: scrollable lists, search bar, history*/
+
+/* table headers */
+body.dark .scroll-box thead th,
+body.dark #co-display thead th,
+body.dark .co-head {
+    background-color: #363636;      /* same as .content-container in dark mode */
+}
+
+body.dark .co-head {
+    color: white;
+}
+
+/* dark scrollbars (removes the white strip) */
+body.dark .scroll-box,
+body.dark #history-display,
+body.dark #co-top,
+body.dark .co-list,
+body.dark #status-display {
+    color-scheme: dark;
+}
+
+/* search bar */
+body.dark #searchBox {
+    border-bottom-color: #555;
+    color: white;
+}
+
+body.dark #searchBox:focus {
+    border-bottom-color: #DBDBDB;
+}
+
+/* empty messages */
+body.dark .empty-cell,
+body.dark .co-empty {
+    color: #b0b0b0;
+}
+
+body.dark input[type="date"] {
+    color-scheme: dark;
+}

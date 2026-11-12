@@ -15,7 +15,11 @@
             <li><a href="sales.html">Sales</a></li>
             <li><a href="inventory.html">Inventory</a></li>
             <li><a href="history.html">History</a></li>
-            <li><a href="settings.html">Settings</a></li>
+            <li>
+                <li>
+                    <button type="button" id="themeBtn" aria-label="Toggle light and dark mode">🌙</button>
+                </li>
+            </li>
         </ul>
     </nav>
 
@@ -42,7 +46,7 @@
             
             <div class="content-container" id="inventory">
                 <h3>Current Products</h3>
-                <div id="products-display"></div>
+                <div id="products-display" class="scroll-box"></div>
             </div>
 
             <p id="message"></p>

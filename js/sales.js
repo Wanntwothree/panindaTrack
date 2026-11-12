@@ -4,6 +4,25 @@ const checkoutBtn = document.getElementById('checkoutBtn');
 
 let cart = {};
 
+const searchBox = document.getElementById('searchBox');
+
+function filterRows(){
+    const typed = searchBox.value.toLowerCase();
+    const rows = document.querySelectorAll("table tbody tr");
+
+    for(let i = 0; i < rows.length; i++){
+        const name = rows[i].cells[0].textContent.toLowerCase();
+
+        if(name.includes(typed)){
+            rows[i].style.display = "";
+        }else{
+            rows[i].style.display = "none";
+        }
+    }
+}
+
+searchBox.addEventListener('input', filterRows);
+
 function loadProducts(){
     return JSON.parse(localStorage.getItem('products')) || [];
 }
@@ -13,6 +32,7 @@ let salesMessageTimer = null;
 
 function showSalesMessage(text){
     clearTimeout(salesMessageTimer);
+    salesMessage.classList.remove('success');
     salesMessage.textContent = text;
     if(text === '') return;
     salesMessageTimer = setTimeout(() => salesMessage.textContent = '', 2500);
@@ -74,7 +94,17 @@ function displaySales(){
     thead.appendChild(headRow);
     table.appendChild(thead);
 
-    products.forEach((p, index) => {
+    const list = products.map((p, index) => {
+        return {p: p, index: index};
+    });
+
+    list.sort((a, b) => {
+        const aNoStock = a.p.quantity === 0 ? 1 : 0;
+        const bNoStock = b.p.quantity === 0 ? 1 : 0;
+        return aNoStock - bNoStock;
+    });
+
+    list.forEach(({p, index}) => {
         const row = document.createElement('tr');
 
         const nameCell = document.createElement('td');
@@ -181,6 +211,20 @@ checkoutBtn.addEventListener('click', () => {
     let total = 0;
     let hasItems = false;
 
+    // Build the table and its header
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const headRow = document.createElement('tr');
+    ['Product', 'Qty', 'Price'].forEach(text => {
+        const th = document.createElement('th');
+        th.textContent = text;
+        headRow.appendChild(th);
+    });
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+
     products.forEach((p, index) => {
         const qty = cart[index] || 0;
         if(qty === 0) return;
@@ -188,10 +232,18 @@ checkoutBtn.addEventListener('click', () => {
         hasItems = true;
         total += p.price * qty;
 
-        const line = document.createElement('div');
-        line.textContent = `${p.name} x ${qty} - ₱${(p.price * qty).toFixed(2)}`;
-        checkoutSummary.appendChild(line);
+        // One table row per item
+        const row = document.createElement('tr');
+        [p.name, qty, `₱${(p.price * qty).toFixed(2)}`].forEach(value => {
+            const td = document.createElement('td');
+            td.textContent = value;
+            row.appendChild(td);
+        });
+        tbody.appendChild(row);
     });
+
+    table.appendChild(tbody);
+    checkoutSummary.appendChild(table);
 
     if(!hasItems){
         showSalesMessage('Add at least one item before checkout.');
@@ -240,6 +292,8 @@ confirmBtn.addEventListener('click', () => {
     cart = {};
     checkoutDialog.close();
     displaySales();
+    showSalesMessage('Checkout successful!');
+    salesMessage.classList.add('success');
 });
 
 

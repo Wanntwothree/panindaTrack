@@ -9,6 +9,25 @@ const message = document.getElementById('message');
 
 let selectedIndex = null;
 
+const searchBox = document.getElementById('searchBox');
+
+function filterRows(){
+    const typed = searchBox.value.toLowerCase();
+    const rows = document.querySelectorAll("table tbody tr");
+
+    for(let i = 0; i < rows.length; i++){
+        const name = rows[i].cells[0].textContent.toLowerCase();
+
+        if(name.includes(typed)){
+            rows[i].style.display = "";
+        }else{
+            rows[i].style.display = "none";
+        }
+    }
+}
+
+searchBox.addEventListener('input', filterRows);
+
 function loadProducts() {
     return JSON.parse(localStorage.getItem('products')) || [];
 }
@@ -128,6 +147,7 @@ function displayProducts() {
     table.appendChild(thead);
     table.appendChild(tbody);
     display.appendChild(table);
+    filterRows();
 }
 
 /*input validation*/
